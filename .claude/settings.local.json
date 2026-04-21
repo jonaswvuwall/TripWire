@@ -5,7 +5,24 @@
       "Bash(unzip -o webpage_tracker_systemuebersicht.docx -d extracted)",
       "Bash(dotnet --version)",
       "Bash(dotnet --list-sdks)",
-      "Bash(dotnet build *)"
+      "Bash(dotnet build *)",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(dotnet run *)",
+      "Bash(npm run *)",
+      "Bash(curl -sS -o /dev/null -w \"UI: %{http_code}\\\\n\" http://localhost:5173/)",
+      "Bash(curl -sS -o /dev/null -w \"API health \\(trackers\\): %{http_code}\\\\n\" http://localhost:5080/api/trackers)",
+      "Bash(curl -sS -o /dev/null -w \"UI proxy \\(via 5173 to api\\): %{http_code}\\\\n\" http://localhost:5173/api/trackers)",
+      "Bash(curl -sS http://localhost:5080/api/trackers)",
+      "Bash(curl -sS http://localhost:5080/api/actions)",
+      "Bash(curl -sS http://localhost:5080/api/logs)",
+      "Bash(curl -sS -X POST http://localhost:5173/api/trackers -H \"Content-Type: application/json\" -d '{\"id\":\"demo-example\",\"name\":\"Example demo\",\"url\":\"https://example.com\",\"intervalSeconds\":300,\"selectors\":[{\"name\":\"title\",\"element\":\"h1\"}],\"rules\":[{\"selectorNames\":[\"title\"],\"type\":\"contains\",\"value\":\"Example\",\"message\":\"Title contains Example\"}]}')",
+      "Bash(curl -sS http://localhost:5173/api/trackers)",
+      "Bash(curl -sS -X DELETE http://localhost:5173/api/trackers/demo-example -w \"\\\\nDELETE: %{http_code}\\\\n\")",
+      "Bash(kill %1)",
+      "Bash(lsof -ti:5173)",
+      "Bash(xargs -r kill)",
+      "Bash(curl -sS -X DELETE http://localhost:5080/api/logs -w \"DELETE logs: %{http_code}\\\\n\")"
     ]
   }
 }
