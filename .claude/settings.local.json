@@ -22,7 +22,23 @@
       "Bash(kill %1)",
       "Bash(lsof -ti:5173)",
       "Bash(xargs -r kill)",
-      "Bash(curl -sS -X DELETE http://localhost:5080/api/logs -w \"DELETE logs: %{http_code}\\\\n\")"
+      "Bash(curl -sS -X DELETE http://localhost:5080/api/logs -w \"DELETE logs: %{http_code}\\\\n\")",
+      "Bash(taskkill /F /PID 30168)",
+      "Bash(powershell -Command \"Get-Process -Name TripWire.WebApi -ErrorAction SilentlyContinue | Stop-Process -Force\")",
+      "PowerShell(Stop-Process -Name TripWire.WebApi -Force -ErrorAction SilentlyContinue; Start-Sleep 1; \\(Get-Process -Name TripWire.WebApi -ErrorAction SilentlyContinue | Measure-Object\\).Count)",
+      "Bash(curl -sS -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5080/api/trackers)",
+      "Bash(curl -sS \"http://localhost:5080/api/preview?url=https://example.com\")",
+      "Bash(curl -sS -o /dev/null -w \"status=%{http_code} type=%{content_type} size=%{size_download}\\\\n\" \"http://localhost:5080/api/preview?url=https://example.com\")",
+      "Bash(git ls-tree *)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git fetch *)",
+      "Bash(git push *)",
+      "Bash(gh pr *)",
+      "Bash(git pull *)",
+      "Bash(git stash *)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 5175 -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }; \"done\")"
     ]
   }
 }
