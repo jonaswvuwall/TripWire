@@ -102,10 +102,10 @@ function buildHeader(path: string): { title: string; crumbs: React.ReactNode; to
       topbarActions: (
         <a
           className="btn btn-ghost"
-          href="https://github.com/"
+          href="https://github.com/jonaswvuwall/TripWire/blob/main/src/web-api/README.md"
           target="_blank"
           rel="noreferrer"
-          title="Repository"
+          title="Open README on GitHub"
         >
           <BookOpen size={14} /> Docs
         </a>
