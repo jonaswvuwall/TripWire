@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams, NavLink } from 'react-router-dom';
-import { ArrowLeft, Plus, Save, Trash2, X } from 'lucide-react';
+import { ArrowLeft, MousePointerClick, Plus, Save, Trash2, X } from 'lucide-react';
 import { api } from '../api';
+import { PickerDialog, type PickEvent } from '../components/PickerDialog';
 import type { Rule, RuleType, Selector, Tracker } from '../types';
 
 const EMPTY_TRACKER: Tracker = {
@@ -29,6 +30,8 @@ export default function TrackerEditor({ mode }: { mode: 'new' | 'edit' }) {
 
   const [draft, setDraft] = useState<Tracker>(EMPTY_TRACKER);
   const [error, setError] = useState<string | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerTarget, setPickerTarget] = useState<number | null>(null);
 
   useEffect(() => {
     if (mode === 'edit' && existing.data) setDraft(existing.data);
@@ -64,6 +67,34 @@ export default function TrackerEditor({ mode }: { mode: 'new' | 'edit' }) {
     setDraft({ ...draft, selectors: [...draft.selectors, { name: '', element: '' }] });
   const removeSelector = (i: number) =>
     setDraft({ ...draft, selectors: draft.selectors.filter((_, idx) => idx !== i) });
+
+  const suggestName = (sel: string, text?: string) => {
+    if (text) {
+      const slug = text
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+        .slice(0, 24);
+      if (slug) return slug;
+    }
+    const tag = sel.match(/^[a-z0-9]+/i)?.[0] ?? 'selector';
+    let n = 1;
+    while (draft.selectors.some((s) => s.name === `${tag}-${n}`)) n++;
+    return `${tag}-${n}`;
+  };
+
+  const handlePick = (picked: PickEvent) => {
+    if (pickerTarget !== null) {
+      updateSelector(pickerTarget, { element: picked.selector });
+      setPickerTarget(null);
+      setPickerOpen(false);
+      return;
+    }
+    setDraft((d) => ({
+      ...d,
+      selectors: [...d.selectors, { name: suggestName(picked.selector, picked.text), element: picked.selector }],
+    }));
+  };
 
   const updateRule = (i: number, next: Partial<Rule>) => {
     const arr = [...draft.rules];
@@ -172,7 +203,24 @@ export default function TrackerEditor({ mode }: { mode: 'new' | 'edit' }) {
         </section>
 
         <section className="card">
-          <div className="card-title">Selectors</div>
+          <div className="card-title">
+            Selectors
+            <div className="spacer" />
+            <button
+              type="button"
+              className="btn btn-sm"
+              onClick={() => {
+                if (!draft.url.trim()) {
+                  setError('Set the tracker URL before picking an element.');
+                  return;
+                }
+                setPickerTarget(null);
+                setPickerOpen(true);
+              }}
+            >
+              <MousePointerClick size={13} /> Pick from page
+            </button>
+          </div>
           <div className="repeater">
             {draft.selectors.map((s, i) => (
               <div key={i} className="repeater-row">
@@ -189,6 +237,22 @@ export default function TrackerEditor({ mode }: { mode: 'new' | 'edit' }) {
                   onChange={(e) => updateSelector(i, { element: e.target.value })}
                 />
                 <button
+                  type="button"
+                  className="btn btn-ghost btn-icon"
+                  title="Pick element from the page"
+                  onClick={() => {
+                    if (!draft.url.trim()) {
+                      setError('Set the tracker URL before picking an element.');
+                      return;
+                    }
+                    setPickerTarget(i);
+                    setPickerOpen(true);
+                  }}
+                >
+                  <MousePointerClick size={14} />
+                </button>
+                <button
+                  type="button"
                   className="btn btn-ghost btn-icon"
                   onClick={() => removeSelector(i)}
                   aria-label="Remove selector"
@@ -198,11 +262,14 @@ export default function TrackerEditor({ mode }: { mode: 'new' | 'edit' }) {
               </div>
             ))}
             {draft.selectors.length === 0 && (
-              <div className="muted xs">No selectors yet — add one to define what to extract.</div>
+              <div className="muted xs">
+                No selectors yet — click <b style={{ color: 'var(--text-2)' }}>Pick from page</b> to
+                capture one visually, or add a manual row.
+              </div>
             )}
             <button className="repeater-add" onClick={addSelector}>
               <Plus size={12} style={{ verticalAlign: 'middle', marginRight: 4 }} />
-              Add selector
+              Add selector manually
             </button>
           </div>
         </section>
@@ -231,6 +298,17 @@ export default function TrackerEditor({ mode }: { mode: 'new' | 'edit' }) {
           </button>
         </section>
       </div>
+
+      {pickerOpen && (
+        <PickerDialog
+          url={draft.url}
+          onPick={handlePick}
+          onClose={() => {
+            setPickerOpen(false);
+            setPickerTarget(null);
+          }}
+        />
+      )}
     </>
   );
 }
