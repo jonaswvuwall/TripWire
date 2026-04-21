@@ -9,6 +9,7 @@ import {
   Plus,
 } from 'lucide-react';
 import { api } from '../api';
+import { ThemeToggle } from './ThemeToggle';
 
 export default function Layout() {
   const trackers = useQuery({ queryKey: ['trackers'], queryFn: api.trackers.list });
@@ -75,7 +76,10 @@ export default function Layout() {
             <div className="crumbs">{crumbs}</div>
             <h1>{title}</h1>
           </div>
-          <div className="topbar-actions">{topbarActions}</div>
+          <div className="topbar-actions">
+            <ThemeToggle />
+            {topbarActions}
+          </div>
         </header>
         <div className="page">
           {isApiDown && (
