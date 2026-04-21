@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/JonasWintrich/develop/docs/**)",
+      "Bash(unzip -o webpage_tracker_systemuebersicht.docx -d extracted)",
+      "Bash(dotnet --version)",
+      "Bash(dotnet --list-sdks)",
+      "Bash(dotnet build *)"
+    ]
+  }
+}
