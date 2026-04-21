@@ -27,7 +27,7 @@ Defaults to `http://localhost:5080`. Open `/swagger` for interactive docs.
 The background worker starts automatically and polls every configured tracker on its
 own interval.
 
-## Project layout
+## Backend project layout
 
 ```
 src/web-api/
@@ -53,8 +53,59 @@ src/web-api/
 └── Controllers/
     ├── TrackersController.cs
     ├── ActionsController.cs
-    └── LogsController.cs
+    ├── LogsController.cs
+    └── PreviewController.cs        # /api/preview — inspector-style page proxy
 ```
+
+## Frontend
+
+Lives in the sibling [`../web-ui/`](../web-ui/) folder — a Vite + React 19 + TypeScript
+single-page app that consumes the API.
+
+**Stack**
+
+- **React 19 + TypeScript** — UI runtime
+- **Vite** — dev server + bundler (dev proxy forwards `/api` → `http://localhost:5080`)
+- **React Router v7** — client-side routing
+- **TanStack Query v5** — data fetching, caching, auto-refetch for the live log/event views
+- **lucide-react** — iconography
+- Plain CSS with custom-property tokens — dark / light themes, no framework
+
+**Run** from the repository root:
+
+```bash
+npm install   # first time only
+npm run dev
+```
+
+Opens on `http://localhost:5173`. Start the backend (`dotnet run` in `src/web-api/`)
+separately so the Vite proxy has something to forward to.
+
+**Folder layout**
+
+```
+src/web-ui/
+├── main.tsx                        # React + Router + QueryClient providers
+├── App.tsx                         # route table
+├── styles.css                      # design tokens + components (dark/light themes)
+├── api.ts                          # typed fetch client for /api
+├── types.ts                        # TS models mirroring the C# API
+├── components/
+│   ├── Layout.tsx                  # app shell: sidebar, topbar, live worker indicator
+│   ├── LogItem.tsx                 # single event row with level + context chips
+│   ├── PickerDialog.tsx            # visual element picker modal (iframe + postMessage)
+│   └── ThemeToggle.tsx             # sun/moon toggle, persists to localStorage
+└── pages/
+    ├── Dashboard.tsx               # stat cards + recent events + tracker activity
+    ├── Trackers.tsx                # list view
+    ├── TrackerEditor.tsx           # form: general + selectors + rules (with picker)
+    ├── Actions.tsx                 # list view
+    ├── ActionEditor.tsx            # form: type + HTTP + headers
+    └── Logs.tsx                    # live-refreshing event feed with filters + search
+```
+
+The entry points `index.html`, `vite.config.ts`, and `package.json` live at the repo root
+since Vite treats the workspace root as the app root.
 
 ## Endpoints
 
