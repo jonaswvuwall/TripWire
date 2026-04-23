@@ -4,8 +4,7 @@ public class LogEntry
 {
     public DateTime Timestamp { get; set; } = DateTime.UtcNow;
 
-    // EVT | INFO | WARN | ERR | DEBUG
-    public string Level { get; set; } = "INFO";
+    public string Level { get; set; } = LogLevels.Info;
 
     public string Message { get; set; } = "";
 

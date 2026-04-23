@@ -1,5 +1,6 @@
 using AngleSharp.Html.Parser;
 using Microsoft.AspNetCore.Mvc;
+using TripWire.WebApi.Services;
 
 namespace TripWire.WebApi.Controllers;
 
@@ -23,9 +24,7 @@ public class PreviewController : ControllerBase
         string html;
         try
         {
-            var client = _httpFactory.CreateClient();
-            client.Timeout = TimeSpan.FromSeconds(30);
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("TripWire/1.0 (+element picker)");
+            var client = _httpFactory.CreateClient(HttpClients.Preview);
             html = await client.GetStringAsync(uri, ct);
         }
         catch (Exception ex)
@@ -36,9 +35,8 @@ public class PreviewController : ControllerBase
         var parser = new HtmlParser();
         var doc = parser.ParseDocument(html);
 
-        // strip page scripts so they can't interfere with the picker
+        // scripts removed so they can't interfere with the picker; CSP meta removed so our injected script+style run
         foreach (var s in doc.QuerySelectorAll("script").ToArray()) s.Remove();
-        // strip CSP meta — it would block our injected script + inline style
         foreach (var m in doc.QuerySelectorAll("meta[http-equiv]").ToArray())
         {
             var eq = m.GetAttribute("http-equiv");
@@ -46,7 +44,7 @@ public class PreviewController : ControllerBase
                 m.Remove();
         }
 
-        // <base href> so relative assets resolve to the original site
+        // <base href> so relative assets resolve against the original site, not our proxy
         var head = doc.Head;
         if (head != null)
         {
@@ -56,7 +54,6 @@ public class PreviewController : ControllerBase
             head.Prepend(baseEl);
         }
 
-        // inject picker script
         var body = doc.Body;
         if (body != null)
         {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useParams, NavLink } from 'react-router-dom';
 import { ArrowLeft, MousePointerClick, Plus, Save, Trash2, X } from 'lucide-react';
@@ -17,25 +17,28 @@ const EMPTY_TRACKER: Tracker = {
 
 export default function TrackerEditor({ mode }: { mode: 'new' | 'edit' }) {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const qc = useQueryClient();
-
   const existing = useQuery({
     queryKey: ['tracker', id],
     queryFn: () => api.trackers.get(id!),
     enabled: mode === 'edit' && !!id,
   });
 
+  if (mode === 'edit' && !existing.data) {
+    return <div className="empty"><div className="spinner" /></div>;
+  }
+  return <TrackerEditorInner mode={mode} initial={existing.data ?? EMPTY_TRACKER} />;
+}
+
+function TrackerEditorInner({ mode, initial }: { mode: 'new' | 'edit'; initial: Tracker }) {
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+
   const actions = useQuery({ queryKey: ['actions'], queryFn: api.actions.list });
 
-  const [draft, setDraft] = useState<Tracker>(EMPTY_TRACKER);
+  const [draft, setDraft] = useState<Tracker>(initial);
   const [error, setError] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerTarget, setPickerTarget] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (mode === 'edit' && existing.data) setDraft(existing.data);
-  }, [mode, existing.data]);
 
   const save = useMutation({
     mutationFn: async (t: Tracker) => {
