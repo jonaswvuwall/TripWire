@@ -96,7 +96,6 @@ export default function Actions() {
 
 function typeClass(t: string) {
   switch (t) {
-    case 'webhook': return 'accent';
     case 'api-request': return 'info';
     case 'log': return '';
     case 'script': return 'warn';

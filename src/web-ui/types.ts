@@ -1,6 +1,6 @@
 export type RuleType = 'threshold' | 'contains' | 'changed';
 export type Operator = '>' | '<' | '>=' | '<=' | '==' | '!=';
-export type ActionType = 'webhook' | 'api-request' | 'log' | 'script';
+export type ActionType = 'api-request' | 'log' | 'script';
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 export type LogLevel = 'EVT' | 'INFO' | 'WARN' | 'ERR' | 'DEBUG';
 

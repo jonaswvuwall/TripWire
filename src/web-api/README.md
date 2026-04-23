@@ -2,7 +2,7 @@
 
 PoC backend for a webpage tracker. Periodically fetches configured URLs, extracts values
 via CSS selectors, evaluates rules against those values, and dispatches actions
-(webhooks, HTTP calls, logs) when rules fire. All state lives in three JSON files in
+(HTTP calls, logs) when rules fire. All state lives in three JSON files in
 `Data/` — no database.
 
 ## Stack
@@ -48,7 +48,7 @@ src/web-api/
 │   └── JsonStore.cs                # generic file-backed, lock-guarded store
 ├── Services/
 │   ├── ContentAnalyzer.cs          # extracts values, evaluates rules (edge-triggered)
-│   ├── ActionExecutor.cs           # dispatches webhook / api-request / log / script
+│   ├── ActionExecutor.cs           # dispatches api-request / log / script
 │   └── TrackerWorker.cs            # BackgroundService loop
 └── Controllers/
     ├── TrackersController.cs
@@ -151,7 +151,7 @@ Same CRUD shape as trackers.
       "type": "threshold",
       "operator": ">",
       "value": 90,
-      "triggerAction": "action-send-webhook",
+      "triggerAction": "action-send-request",
       "message": "Price above threshold"
     }
   ]
@@ -162,15 +162,15 @@ Same CRUD shape as trackers.
 
 ```json
 {
-  "id": "action-send-webhook",
-  "type": "webhook",
+  "id": "action-send-request",
+  "type": "api-request",
   "method": "POST",
-  "url": "https://example.com/webhook",
+  "url": "https://example.com/endpoint",
   "headers": { "X-Api-Key": "secret" }
 }
 ```
 
-`type` is one of `webhook`, `api-request`, `log`, `script`.
+`type` is one of `api-request`, `log`, `script`.
 `script` is accepted by the schema but not executed in the PoC.
 
 ### Log entry
@@ -186,7 +186,7 @@ Same CRUD shape as trackers.
     "ruleType": "threshold",
     "previousValue": "95",
     "currentValue": "105",
-    "triggeredAction": "action-send-webhook"
+    "triggeredAction": "action-send-request"
   }
 }
 ```
