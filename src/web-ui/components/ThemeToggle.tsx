@@ -16,7 +16,7 @@ export function ThemeToggle() {
     document.documentElement.setAttribute('data-theme', theme);
     try {
       localStorage.setItem('theme', theme);
-    } catch (_) {
+    } catch {
       /* ignore storage errors */
     }
   }, [theme]);

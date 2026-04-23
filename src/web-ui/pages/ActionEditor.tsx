@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Plus, Save, Trash2, X } from 'lucide-react';
@@ -9,25 +9,27 @@ const EMPTY: TrackerAction = { id: '', type: 'webhook', method: 'POST', url: '' 
 
 export default function ActionEditor({ mode }: { mode: 'new' | 'edit' }) {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const qc = useQueryClient();
-
   const existing = useQuery({
     queryKey: ['action', id],
     queryFn: () => api.actions.get(id!),
     enabled: mode === 'edit' && !!id,
   });
 
-  const [draft, setDraft] = useState<TrackerAction>(EMPTY);
-  const [headers, setHeaders] = useState<{ key: string; value: string }[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  if (mode === 'edit' && !existing.data) {
+    return <div className="empty"><div className="spinner" /></div>;
+  }
+  return <ActionEditorInner mode={mode} initial={existing.data ?? EMPTY} />;
+}
 
-  useEffect(() => {
-    if (mode === 'edit' && existing.data) {
-      setDraft(existing.data);
-      setHeaders(Object.entries(existing.data.headers ?? {}).map(([key, value]) => ({ key, value })));
-    }
-  }, [mode, existing.data]);
+function ActionEditorInner({ mode, initial }: { mode: 'new' | 'edit'; initial: TrackerAction }) {
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+
+  const [draft, setDraft] = useState<TrackerAction>(initial);
+  const [headers, setHeaders] = useState<{ key: string; value: string }[]>(() =>
+    Object.entries(initial.headers ?? {}).map(([key, value]) => ({ key, value })),
+  );
+  const [error, setError] = useState<string | null>(null);
 
   const headersObj = () => {
     const obj: Record<string, string> = {};

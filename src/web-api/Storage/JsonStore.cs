@@ -81,7 +81,6 @@ public class JsonStore<T> where T : class
         var json = JsonSerializer.Serialize(value, Options);
         var tmp = _path + ".tmp";
         await File.WriteAllTextAsync(tmp, json);
-        if (File.Exists(_path)) File.Delete(_path);
-        File.Move(tmp, _path);
+        File.Move(tmp, _path, overwrite: true);
     }
 }

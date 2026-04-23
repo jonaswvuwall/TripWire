@@ -18,14 +18,14 @@ public class ActionExecutor
     {
         switch (action.Type)
         {
-            case "webhook":
-            case "api-request":
+            case ActionTypes.Webhook:
+            case ActionTypes.ApiRequest:
                 await SendHttpAsync(action, triggeringLog, ct);
                 break;
-            case "log":
+            case ActionTypes.Log:
                 _logger.LogInformation("Action {Id} (log): {Message}", action.Id, triggeringLog.Message);
                 break;
-            case "script":
+            case ActionTypes.Script:
                 _logger.LogWarning("Action {Id}: type 'script' is not implemented in the PoC.", action.Id);
                 break;
             default:
@@ -42,8 +42,7 @@ public class ActionExecutor
             return;
         }
 
-        var client = _httpFactory.CreateClient();
-        client.Timeout = TimeSpan.FromSeconds(15);
+        var client = _httpFactory.CreateClient(HttpClients.Action);
         var method = new HttpMethod((action.Method ?? "POST").ToUpperInvariant());
 
         using var request = new HttpRequestMessage(method, action.Url);

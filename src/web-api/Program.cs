@@ -13,7 +13,21 @@ builder.Services.AddControllers()
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHttpClient();
+
+builder.Services.AddHttpClient(HttpClients.Fetch, c =>
+{
+    c.Timeout = TimeSpan.FromSeconds(30);
+    c.DefaultRequestHeaders.UserAgent.ParseAdd("TripWire/1.0");
+});
+builder.Services.AddHttpClient(HttpClients.Preview, c =>
+{
+    c.Timeout = TimeSpan.FromSeconds(30);
+    c.DefaultRequestHeaders.UserAgent.ParseAdd("TripWire/1.0 (+element picker)");
+});
+builder.Services.AddHttpClient(HttpClients.Action, c =>
+{
+    c.Timeout = TimeSpan.FromSeconds(15);
+});
 
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p
     .AllowAnyOrigin()

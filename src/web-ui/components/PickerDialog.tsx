@@ -24,11 +24,9 @@ export function PickerDialog({
   const [reloadKey, setReloadKey] = useState(0);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
-  // elapsed counter + timeout while loading
   useEffect(() => {
     if (state !== 'loading') return;
     const t0 = Date.now();
-    setElapsed(0);
     const interval = window.setInterval(() => {
       setElapsed(Math.floor((Date.now() - t0) / 1000));
     }, 500);

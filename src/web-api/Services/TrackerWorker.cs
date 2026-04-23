@@ -72,7 +72,6 @@ public class TrackerWorker : BackgroundService
             if (_lastPoll.TryGetValue(tracker.Id, out var last) && (now - last).TotalSeconds < interval)
                 continue;
 
-            // don't queue multiple passes if a tracker is slow
             if (!_inFlight.TryAdd(tracker.Id, 1)) continue;
             _lastPoll[tracker.Id] = now;
 
@@ -88,10 +87,7 @@ public class TrackerWorker : BackgroundService
     {
         try
         {
-            var client = _httpFactory.CreateClient();
-            client.Timeout = TimeSpan.FromSeconds(30);
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("TripWire/1.0");
-
+            var client = _httpFactory.CreateClient(HttpClients.Fetch);
             var html = await client.GetStringAsync(tracker.Url, ct);
             var values = _analyzer.Extract(html, tracker.Selectors);
             var hits = _analyzer.Evaluate(tracker, values);
@@ -109,7 +105,7 @@ public class TrackerWorker : BackgroundService
                 var entry = new LogEntry
                 {
                     Timestamp = DateTime.UtcNow,
-                    Level = "EVT",
+                    Level = LogLevels.Event,
                     Message = string.IsNullOrWhiteSpace(hit.Rule.Message)
                         ? $"Rule '{hit.Rule.Type}' on '{hit.MatchedSelector}' triggered"
                         : hit.Rule.Message!,
@@ -142,7 +138,7 @@ public class TrackerWorker : BackgroundService
             _logger.LogError(ex, "Tracker {Id} failed: {Message}", tracker.Id, ex.Message);
             await AppendLogAsync(new LogEntry
             {
-                Level = "ERR",
+                Level = LogLevels.Error,
                 Message = $"Tracker '{tracker.Id}' failed: {ex.Message}",
                 Context = new LogContext { TrackerId = tracker.Id }
             });

@@ -6,10 +6,8 @@ public class Rule
 {
     public List<string> SelectorNames { get; set; } = new();
 
-    // threshold | contains | changed
     public string Type { get; set; } = "";
 
-    // > < >= <= == !=   (only for threshold)
     public string? Operator { get; set; }
 
     // string | number | boolean depending on Type

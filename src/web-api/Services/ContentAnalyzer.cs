@@ -19,10 +19,7 @@ public class ContentAnalyzer
 {
     private readonly HtmlParser _parser = new();
 
-    // key "trackerId|selectorName" -> last observed value
     private readonly ConcurrentDictionary<string, string?> _lastValues = new();
-
-    // key "trackerId|ruleIndex" -> whether the rule was triggered on the previous tick
     private readonly ConcurrentDictionary<string, bool> _lastTriggered = new();
 
     public List<SelectorValue> Extract(string html, IEnumerable<Selector> selectors)
@@ -75,7 +72,7 @@ public class ContentAnalyzer
 
             // edge-trigger: only emit on false->true transition.
             // 'changed' is itself edge-like, so emit every time the condition matches.
-            if (nowTriggered && (!wasTriggered || rule.Type == "changed"))
+            if (nowTriggered && (!wasTriggered || rule.Type == RuleTypes.Changed))
             {
                 hits.Add(match!);
             }
@@ -96,7 +93,7 @@ public class ContentAnalyzer
     {
         switch (rule.Type)
         {
-            case "threshold":
+            case RuleTypes.Threshold:
                 {
                     if (current == null || rule.Operator == null || rule.Value == null) return false;
                     if (!TryParseNumber(current, out var cur)) return false;
@@ -112,14 +109,14 @@ public class ContentAnalyzer
                         _ => false
                     };
                 }
-            case "contains":
+            case RuleTypes.Contains:
                 {
                     if (current == null || rule.Value == null) return false;
                     var needle = ExtractString(rule.Value.Value);
                     return !string.IsNullOrEmpty(needle)
                         && current.Contains(needle, StringComparison.OrdinalIgnoreCase);
                 }
-            case "changed":
+            case RuleTypes.Changed:
                 {
                     // first observation does not count as a change
                     if (previous == null) return false;

@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { NavLink } from 'react-router-dom';
 import { Activity, AlertTriangle, Radar, Zap, ArrowRight } from 'lucide-react';
@@ -13,20 +14,21 @@ export default function Dashboard() {
     refetchInterval: 4000,
   });
 
-  const now = Date.now();
-  const last24h = (logs.data ?? []).filter(
-    (l) => now - new Date(l.timestamp).getTime() < 24 * 3600 * 1000,
-  );
-  const events24h = last24h.filter((l) => l.level === 'EVT').length;
-  const errors24h = last24h.filter((l) => l.level === 'ERR').length;
-  const recent = (logs.data ?? []).slice(0, 8);
-
-  const byTracker = new Map<string, number>();
-  (logs.data ?? []).forEach((l) => {
-    const id = l.context?.trackerId;
-    if (!id) return;
-    if (l.level === 'EVT') byTracker.set(id, (byTracker.get(id) ?? 0) + 1);
-  });
+  const { events24h, errors24h, recent, byTracker } = useMemo(() => {
+    const all = logs.data ?? [];
+    const cutoff = (logs.dataUpdatedAt || 0) - 24 * 3600 * 1000;
+    let evt = 0, err = 0;
+    const byTrackerMap = new Map<string, number>();
+    for (const l of all) {
+      if (new Date(l.timestamp).getTime() >= cutoff) {
+        if (l.level === 'EVT') evt++;
+        else if (l.level === 'ERR') err++;
+      }
+      const id = l.context?.trackerId;
+      if (id && l.level === 'EVT') byTrackerMap.set(id, (byTrackerMap.get(id) ?? 0) + 1);
+    }
+    return { events24h: evt, errors24h: err, recent: all.slice(0, 8), byTracker: byTrackerMap };
+  }, [logs.data, logs.dataUpdatedAt]);
 
   return (
     <>
