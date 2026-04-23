@@ -18,7 +18,6 @@ public class ActionExecutor
     {
         switch (action.Type)
         {
-            case ActionTypes.Webhook:
             case ActionTypes.ApiRequest:
                 await SendHttpAsync(action, triggeringLog, ct);
                 break;

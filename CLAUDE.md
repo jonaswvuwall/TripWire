@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this project is
 
-TripWire is a PoC webpage tracker. A .NET background worker periodically fetches configured URLs, extracts values via CSS selectors with AngleSharp, evaluates rules (threshold / contains / changed), and dispatches actions (webhook, api-request, log, script) when rules fire. A React + Vite SPA provides the management UI and a live event feed.
+TripWire is a PoC webpage tracker. A .NET background worker periodically fetches configured URLs, extracts values via CSS selectors with AngleSharp, evaluates rules (threshold / contains / changed), and dispatches actions (api-request, log, script) when rules fire. A React + Vite SPA provides the management UI and a live event feed.
 
 **All state is three JSON files in [src/web-api/Data/](src/web-api/Data/) — no database.** `config.json` holds trackers + rules, `actions.json` holds action definitions, `logs.json` holds the event log (ring-buffered at 10,000 entries).
 
-[src/web-api/README.md](src/web-api/README.md) is the authoritative reference for data shapes, endpoints, rule semantics, and storage behavior — consult it before changing anything in those areas. The root [README.md](README.md) is unchanged Vite template boilerplate; ignore it.
+[src/web-api/README.md](src/web-api/README.md) is the authoritative reference for data shapes, endpoints, rule semantics, and storage behavior — consult it before changing anything in those areas. The root [README.md](README.md) is a project-level overview (stack, layout, run instructions) that points into the backend README for deep detail.
 
 ## Repository layout
 

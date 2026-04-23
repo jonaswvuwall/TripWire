@@ -5,7 +5,7 @@ import { ArrowLeft, Plus, Save, Trash2, X } from 'lucide-react';
 import { api } from '../api';
 import type { ActionType, HttpMethod, TrackerAction } from '../types';
 
-const EMPTY: TrackerAction = { id: '', type: 'webhook', method: 'POST', url: '' };
+const EMPTY: TrackerAction = { id: '', type: 'api-request', method: 'POST', url: '' };
 
 export default function ActionEditor({ mode }: { mode: 'new' | 'edit' }) {
   const { id } = useParams();
@@ -61,7 +61,7 @@ function ActionEditorInner({ mode, initial }: { mode: 'new' | 'edit'; initial: T
     },
   });
 
-  const isHttp = draft.type === 'webhook' || draft.type === 'api-request';
+  const isHttp = draft.type === 'api-request';
 
   return (
     <>
@@ -112,7 +112,7 @@ function ActionEditorInner({ mode, initial }: { mode: 'new' | 'edit'; initial: T
                   value={draft.id}
                   disabled={mode === 'edit'}
                   onChange={(e) => setDraft({ ...draft, id: e.target.value })}
-                  placeholder="action-send-webhook"
+                  placeholder="action-send-request"
                 />
               </div>
               <div className="field" style={{ maxWidth: 200 }}>
@@ -122,7 +122,6 @@ function ActionEditorInner({ mode, initial }: { mode: 'new' | 'edit'; initial: T
                   value={draft.type}
                   onChange={(e) => setDraft({ ...draft, type: e.target.value as ActionType })}
                 >
-                  <option value="webhook">webhook</option>
                   <option value="api-request">api-request</option>
                   <option value="log">log</option>
                   <option value="script">script</option>
@@ -157,7 +156,7 @@ function ActionEditorInner({ mode, initial }: { mode: 'new' | 'edit'; initial: T
                     className="input mono"
                     value={draft.url ?? ''}
                     onChange={(e) => setDraft({ ...draft, url: e.target.value })}
-                    placeholder="https://example.com/webhook"
+                    placeholder="https://example.com/endpoint"
                   />
                 </div>
               </div>

@@ -9,7 +9,6 @@ public static class RuleTypes
 
 public static class ActionTypes
 {
-    public const string Webhook = "webhook";
     public const string ApiRequest = "api-request";
     public const string Log = "log";
     public const string Script = "script";
