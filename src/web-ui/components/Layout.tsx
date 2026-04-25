@@ -127,11 +127,7 @@ function buildHeader(path: string): { title: string; crumbs: React.ReactNode; to
     return {
       title: 'Trackers',
       crumbs: <span>Workspace</span>,
-      topbarActions: (
-        <NavLink to="/trackers/new" className="btn btn-primary btn-sm">
-          <Plus size={14} /> New tracker
-        </NavLink>
-      ),
+      topbarActions: null,
     };
   }
   if (path.startsWith('/actions/new')) {
@@ -149,11 +145,7 @@ function buildHeader(path: string): { title: string; crumbs: React.ReactNode; to
     return {
       title: 'Actions',
       crumbs: <span>Workspace</span>,
-      topbarActions: (
-        <NavLink to="/actions/new" className="btn btn-primary btn-sm">
-          <Plus size={14} /> New action
-        </NavLink>
-      ),
+      topbarActions: null,
     };
   }
   if (path === '/logs') {
