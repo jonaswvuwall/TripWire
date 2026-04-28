@@ -25,7 +25,6 @@ All state lives in three JSON files in [src/web-api/Data/](src/web-api/Data/) �
 
 ```
 TripWire/
-├── index.html, vite.config.ts, package.json, tsconfig.*   # Vite app root = repo root
 ├── TripWire.sln
 ├── src/
 │   ├── web-api/            # .NET 8 backend (controllers, worker, JSON storage)
@@ -33,7 +32,9 @@ TripWire/
 │   │   ├── Data/           # config.json, actions.json, logs.json
 │   │   ├── Models/, Storage/, Services/, Controllers/
 │   │   └── README.md       # authoritative API reference
-│   └── web-ui/             # React SPA
+│   └── web-ui/             # React SPA — Vite app root
+│       ├── index.html, vite.config.ts, package.json, tsconfig.*, eslint.config.js
+│       ├── public/         # favicon.svg, icons.svg
 │       ├── main.tsx, App.tsx, styles.css
 │       ├── api.ts, types.ts
 │       ├── components/     # Layout, PickerDialog, ThemeToggle, LogItem
@@ -52,7 +53,7 @@ dotnet run            # API on http://0.0.0.0:5080, Swagger at /swagger
 dotnet watch run      # hot reload
 ```
 
-**Frontend** — from the repository root:
+**Frontend** — from `src/web-ui/`:
 
 ```bash
 npm install           # first time only

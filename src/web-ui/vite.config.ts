@@ -8,10 +8,17 @@ export default defineConfig({
     react(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  optimizeDeps: {
+    esbuildOptions: { target: 'chrome87' },
+  },
+  build: {
+    target: 'chrome87',
+  },
   server: {
     host: true,
     port: 5173,
     strictPort: true,
+    allowedHosts: true,
     proxy: {
       '/api': {
         target: 'http://localhost:5080',
