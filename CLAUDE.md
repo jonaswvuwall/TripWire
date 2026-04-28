@@ -12,14 +12,13 @@ TripWire is a PoC webpage tracker. A .NET background worker periodically fetches
 
 ## Repository layout
 
-- Workspace root *is* the Vite app root — `index.html`, `package.json`, `vite.config.ts`, `tsconfig.*` all live here.
-- [src/web-ui/](src/web-ui/) — React 19 + TypeScript frontend (Vite, React Router v7, TanStack Query v5, plain CSS with custom-property design tokens in [styles.css](src/web-ui/styles.css)).
+- [src/web-ui/](src/web-ui/) — React 19 + TypeScript frontend (Vite, React Router v7, TanStack Query v5, plain CSS with custom-property design tokens in [styles.css](src/web-ui/styles.css)). The Vite app root: `index.html`, `package.json`, `vite.config.ts`, `tsconfig.*`, `eslint.config.js`, and `public/` all live here.
 - [src/web-api/](src/web-api/) — .NET 8 / ASP.NET Core backend. DI, CORS, Swagger, and worker registration all wired in [Program.cs](src/web-api/Program.cs).
 - [TripWire.sln](TripWire.sln) — solution file for the backend.
 
 ## Commands
 
-### Frontend (run from repo root)
+### Frontend (run from `src/web-ui/`)
 
 ```bash
 npm install           # first time only
@@ -37,7 +36,7 @@ dotnet build
 dotnet watch run      # hot reload
 ```
 
-**You need both running together** for local development: `npm run dev` in one terminal, `dotnet run` in another. Vite's dev proxy forwards `/api/*` → `http://localhost:5080` ([vite.config.ts](vite.config.ts)).
+**You need both running together** for local development: `npm run dev` in one terminal, `dotnet run` in another. Vite's dev proxy forwards `/api/*` → `http://localhost:5080` ([src/web-ui/vite.config.ts](src/web-ui/vite.config.ts)).
 
 There is no test suite.
 
@@ -84,7 +83,7 @@ Generic file-backed store shared by API controllers and the worker. Uses a `Sema
 
 Both dev servers listen on all interfaces so LAN devices (phones etc.) can reach the UI:
 
-- Vite: `server.host: true` + `strictPort: true` in [vite.config.ts](vite.config.ts). Vite prints the LAN URLs on startup.
+- Vite: `server.host: true` + `strictPort: true` in [src/web-ui/vite.config.ts](src/web-ui/vite.config.ts). Vite prints the LAN URLs on startup.
 - API: `applicationUrl: http://0.0.0.0:5080` in [launchSettings.json](src/web-api/Properties/launchSettings.json).
 
 Other devices hit the Vite network URL; the proxy forwards `/api` to `localhost:5080` on the dev machine, so they don't need to know the API port. Windows Firewall will prompt the first time on both `node.exe` and `dotnet.exe`.
